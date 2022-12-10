@@ -1,6 +1,6 @@
 {
   "name": "render-beforeall",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "react-testing-library render beforeAll jest test utility",
   "main": "dist/index.js",
   "scripts": {
