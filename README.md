@@ -23,14 +23,15 @@
 
 ## Jest
 
-- Load it before all test using jest's [setupfiles](https://jestjs.io/docs/configuration#setupfiles-array) configuration.<br/>
+- Load it before all test using jest's [setupFilesAfterEnv](https://jestjs.io/docs/configuration#setupfilesafterenv-array) configuration.<br/>
   `jest.config.json`
+
   ```json
   {
-    "setupFiles": ["render-beforeall"]
+    "setupFilesAfterEnv": ["render-beforeall"]
   }
   ```
-- Alternatively, you could create a file that imports this library and make jest import it using [globalsetup](https://jestjs.io/docs/configuration#globalsetup-string)
+
 - If you are using CRA you could import this in `setupTests.js` [check this explanation](https://create-react-app.dev/docs/running-tests/#initializing-test-environment)
 
 ## Mocha
@@ -55,7 +56,7 @@ and that's it.
 # How To Use it
 
 ```ts
-import { renderBeforeAll } from "./index"; // SUPER IMPORTANT IMPORT ORDER
+import { renderBeforeAll } from "render-beforeall";
 import { render, screen } from "@testing-library/react";
 // import ...
 
