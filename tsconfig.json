@@ -3,7 +3,7 @@
     "jsx": "react",
     "outDir": "./dist",
     "allowJs": true,
-    "target": "es6",
+    "target": "es5",
     "moduleResolution": "node"
   },
   "include": ["./src/**/*"]
