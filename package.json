@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsup",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "tsup"
   },
   "repository": {
     "type": "git",
