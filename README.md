@@ -1,53 +1,105 @@
-# render-beforeall
+- [Installation](#installation)
+  - [Jest](#jest)
+  - [Mocha](#mocha)
+- [How To Use it](#how-to-use-it)
+  - [Advanced use](#advanced-use)
+- [Best Practices](#best-practices)
+  - [One State per describe](#one-state-per-describe)
+    - [BAD example](#bad-example)
+    - [Good Example](#good-example)
+- [Description, notes, motivations and alternatives](#description-notes-motivations-and-alternatives)
+  - [You might violate F.I.R.S.T.](#you-might-violate-first)
+  - [Conclusion](#conclusion)
+- [Examples](#examples)
+  - [Form](#form)
+  - [Several States](#several-states)
 
-## Installation
+# Installation
 
-NPM: `npm i -D render-beforeall`
+- NPM: `npm i -D render-beforeall`<br/>
+  YARN: `yarn add render-beforeall -D`
+- Import this library into your test file<br/>
+  ⚠️ Be sure to import this library Before importing `@testing-library/react`, this is a limitation of react testing library as described [here](https://testing-library.com/docs/react-testing-library/setup/#skipping-auto-cleanup:~:text=Just%20make%20sure%20you%20do%20this%20before%20importing%20%40testing%2Dlibrary/react)
 
-YARN: `yarn add render-beforeall -D`
+## Jest
 
-## How To Use it
+- Load it before all test using jest's [setupfiles](https://jestjs.io/docs/configuration#setupfiles-array) configuration.<br/>
+  `jest.config.json`
+  ```json
+  {
+    "setupFiles": ["render-beforeall"]
+  }
+  ```
+- Alternatively, you could create a file that imports this library and make jest import it using [globalsetup](https://jestjs.io/docs/configuration#globalsetup-string)
+- If you are using CRA you could import this in `setupTests.js` [check this explanation](https://create-react-app.dev/docs/running-tests/#initializing-test-environment)
+
+## Mocha
+
+By default this behaviour is not enabled in mocha, when using this library it will as this library takes control of when to cleanup and by default is afterEach test.
+But if your suite happened to behave like this, is probably because someone configured it already following [this guide](https://testing-library.com/docs/react-testing-library/setup/#auto-cleanup-in-mochas-watch-mode)
+
+so you will need to change:
+
+```shell
+mocha -r ./mocha-watch-cleanup-after-each.js
+```
+
+by
+
+```shell
+mocha -r render-beforeall
+```
+
+and that's it.
+
+# How To Use it
 
 ```ts
+import { renderBeforeAll } from "./index"; // SUPER IMPORTANT IMPORT ORDER
+import { render, screen } from "@testing-library/react";
+// import ...
+
 describe("UserProfile", () => {
-  renderBeforeAll(() => <UserProfile />);
+  renderBeforeAll(() => <UserProfile />); // <-- just this line
 
   it(`should let the user know about new offers`, () => {
     expect(screen.getByText("New offers!")).toBeInTheDocument();
-    expect(screen.getByText("Test Offer 1")).toBeInTheDocument();
-    expect(screen.getByText("Test Offer 2")).toBeInTheDocument();
   });
 
   it(`should present user's address`, () => {
-    const addressGroup = screen.getByTestid("user-address");
-    expect(getByText(addressGroup, "Address:")).toBeInTheDocument();
-    expect(
-      getByText(addressGroup, "1772 Test Street, 88888 New York City, NY")
-    ).toBeInTheDocument();
+    expect(screen.getByText("1772 Test Street")).toBeInTheDocument();
   });
 
-  it(`should present user's email`, () => {
-    const phoneGroup = screen.getByTestid("phone-email");
-    expect(getByText(phoneGroup, "Phone:")).toBeInTheDocument();
-    expect(getByText(phoneGroup, "(333)555-7357")).toBeInTheDocument();
-  });
-
-  it(`should present user's email`, () => {
-    const phoneGroup = screen.getByTestid("phone-email");
-    expect(getByText(phoneGroup, "Phone:")).toBeInTheDocument();
-    expect(getByText(phoneGroup, "(333)555-7357")).toBeInTheDocument();
-  });
+  // ...
 });
 ```
 
-## Best Practices
+## Advanced use
 
-### One State per describe
+Alternatively, you could control manually when the testing-library's `cleanup` function is called with the following example:
+
+```ts
+import { settings } from "render-beforeall";
+
+settings.disableAutoCleanup();
+
+// ... something
+
+if (settings.isAutoCleanup()) {
+  // do something when autoCleanup is on
+}
+
+settings.enableAutoCleanUp();
+```
+
+# Best Practices
+
+## One State per describe
 
 If your component has several states, avoid changing them as part of a test.<br/>
 By not doing this [you might violate F.I.R.S.T.](#you-might-violate-first)
 
-#### BAD example
+### BAD example
 
 ```ts
 
@@ -68,7 +120,7 @@ describe(`UserProfile`, () => {
 });
 ```
 
-#### Good Example
+### Good Example
 
 ```ts
 
@@ -97,7 +149,7 @@ describe(`UserProfile`, () => {
 });
 ```
 
-## Description, notes, motivations and alternatives
+# Description, notes, motivations and alternatives
 
 react-testing-library render beforeAll test utility
 
@@ -105,7 +157,7 @@ This tool was created to address the lack of subtests in jest and the enforced (
 
 **NOTE** This tool was not intended to improve performance and there are several caveats you need to take into account when using this tool.
 
-### You might violate F.I.R.S.T.
+## You might violate F.I.R.S.T.
 
 **⚠️ WARNING ⚠️** You might violate [F.I.R.S.T.](https://medium.com/@tasdikrahman/f-i-r-s-t-principles-of-testing-1a497acda8d6), the I (Isolated/Independent part) as you render once, a test could change the state (i.e. interacting with the rendered component) and so the test running after that state change might need to know of that precondition.
 
@@ -114,11 +166,11 @@ Kent Dodds addresses the Isolation problem, and their's argument is that jest is
 
 Also when following TDD is way easier to follow [one test - one assertion](./one-test-one-assertion.md) is part of the discipline. It's easier to stop work at any moment when you have the test functional description described than the GOD test with several scenarios without any description. Also, way easier to read in a code review, and particularly easier to extract the test report and share it with team members to reduce duplication tests.
 
-I strongly believe that Kent Dodds approach could be ok in small and/or fast projects (MVP) that are not intended to be refactored often or that might die quickly. But in a continuous delivery project, where refactors and new features additions are high, better to go with [one test - one assertion](./one-test-one-assertion.md) principle for the reasons explained in that link.
+I strongly believe that Kent Dodds approach could be ok in small and/or fast projects (MVP) that are not intended to be refactored often or that might die quickly. But in a continuous delivery project, where refactors and new feature additions are high, better to go with [one test - one assertion](./one-test-one-assertion.md) principle for the reasons explained in that link.
 
-### CONCLUSION
+## Conclusion
 
-It will be a way better solution to have jest `subtests` similarly as how python subtest work
+It will be a way better solution to have jest `subtests` similar to python's [unittest.subTest](https://docs.python.org/3/library/unittest.html#distinguishing-test-iterations-using-subtests) work
 
 Rewriting Kent Dodds example:
 
@@ -164,9 +216,9 @@ test("course loads and renders the course information", async () => {
 
 This way FIRST wouldn't be broken and it will be easier to see what got broken and why.
 
-## Examples
+# Examples
 
-### FORM
+## Form
 
 ```ts
 describe("RegisterForm", () => {
@@ -221,7 +273,7 @@ describe("RegisterForm", () => {
 });
 ```
 
-### Several States
+## Several States
 
 ```ts
 
