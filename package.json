@@ -4,9 +4,9 @@
   "description": "react-testing-library render beforeAll jest test utility",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsup",
+    "build": "tsup-node",
     "test": "jest",
-    "prepare": "tsup"
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
