@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "danyg.danyg-go-to-test",
+    "firsttris.vscode-jest-runner",
+    "esbenp.prettier-vscode",
+    "yzhang.markdown-all-in-one"
+  ]
+}
