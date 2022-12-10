@@ -11,7 +11,7 @@ export const settings = {
   enableAutoCleanup() {
     this[autoCleanup] = true;
   },
-  isAutoCleanup() {
+  isAutoCleanup(): boolean {
     return this[autoCleanup];
   },
 };
