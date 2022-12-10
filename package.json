@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/danyg/render-beforeall/issues"
   },
-  "homepage": "https://github.com/danyg/render-beforeall#readme",
+  "homepage": "https://github.com/danyg/render-beforeall",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
