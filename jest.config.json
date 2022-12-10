@@ -1,8 +1,8 @@
 {
-  "collectCoverage": true,
-  "collectCoverageFrom": [
-    "src/**/*.{ts,tsx}"
-  ],
-  "coverageDirectory": "coverage",
-  "testEnvironment": "jsdom"
+  "collectCoverage": false,
+  "collectCoverageFrom": ["src/**/*.{ts,tsx}"],
+  "testEnvironment": "jsdom",
+  "transform": {
+    "^.+\\.tsx?$": "esbuild-jest"
+  }
 }
